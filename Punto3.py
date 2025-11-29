@@ -6,13 +6,10 @@ from IPython.display import display
 class Nodo:
     def __init__(self, valor):
         self.valor = valor
-
         # Hijo izquierdo: aquí irán los valores MENORES que 'valor'
         self.izquierdo = None
-
         # Hijo derecho: aquí irán los valores MAYORES que 'valor'
         self.derecho = None
-
 
 # DEFINICIÓN DE LA CLASE ÁRBOL BINARIO DE BÚSQUEDA
 # Esta clase administra el árbol completo:
@@ -107,6 +104,162 @@ class Arbol:
         # Si el valor es MAYOR que el del nodo actual → buscamos a la derecha
         else:
             return self._buscar_en(nodo.derecho, valor)
+    def recorrido_inorden(self):
+        """
+        RECORRIDO INORDEN (In-Order Traversal)
+
+        ORDEN DE VISITA:
+            1. Subárbol IZQUIERDO
+            2. NODO ACTUAL (raíz de ese subárbol)
+            3. Subárbol DERECHO
+
+        ¿PARA QUÉ SIRVE?
+        - En un Árbol Binario de Búsqueda (ABB), devuelve los valores
+          ORDENADOS de menor a mayor.
+        - Permite verificar si el árbol está bien estructurado.
+
+        EJEMPLO:
+                    50
+                   /  \
+                  30   70
+                 /  \
+                20  40
+
+        InOrden = 20 → 30 → 40 → 50 → 70  (ordenados)
+        """
+
+        resultado = []
+        self._inorden_recursivo(self.raiz, resultado)
+        return resultado
+
+    def _inorden_recursivo(self, nodo, resultado):
+        """
+        Función RECURSIVA para el recorrido InOrden.
+
+        IDEA CLAVE:
+        - Si el nodo es None, NO hacemos nada (caso base).
+        - Si el nodo existe, visitamos en este orden:
+            1) Todo el subárbol izquierdo
+            2) El nodo actual
+            3) Todo el subárbol derecho
+        """
+        if nodo is not None:
+            #  Visitar primero el subárbol IZQUIERDO
+            self._inorden_recursivo(nodo.izquierdo, resultado)
+
+            #  Luego procesamos el NODO ACTUAL
+            resultado.append(nodo.valor)
+
+            # Finalmente visitamos el subárbol DERECHO
+            self._inorden_recursivo(nodo.derecho, resultado)
+
+
+    # ============================================================
+    #  RECORRIDO PREORDEN (Raíz - Izquierda - Derecha)
+    # ============================================================
+    # Este recorrido visita primero la RAÍZ.
+    # ============================================================
+
+    def recorrido_preorden(self):
+        """
+        RECORRIDO PREORDEN (Pre-Order Traversal)
+
+        ORDEN DE VISITA:
+            1. NODO ACTUAL (Raíz del subárbol)
+            2. Subárbol IZQUIERDO
+            3. Subárbol DERECHO
+
+        ¿PARA QUÉ SIRVE?
+        - Para clonar/copiar un árbol (guardar su estructura).
+        - Para obtener expresiones en notación prefija.
+        - Para "dibujar" el árbol a partir de la raíz.
+
+        EJEMPLO:
+                    50
+                   /  \
+                  30   70
+                 /  \
+                20  40
+
+        PreOrden = 50 → 30 → 20 → 40 → 70
+        """
+
+        resultado = []
+        self._preorden_recursivo(self.raiz, resultado)
+        return resultado
+
+    def _preorden_recursivo(self, nodo, resultado):
+        """
+        Función RECURSIVA para el recorrido PreOrden.
+
+        ORDEN:
+         Procesar el NODO ACTUAL
+         Recorrer subárbol IZQUIERDO
+         Recorrer subárbol DERECHO
+        """
+        if nodo is not None:
+            # Visitamos el NODO ACTUAL primero
+            resultado.append(nodo.valor)
+
+            #  Recorremos el subárbol IZQUIERDO
+            self._preorden_recursivo(nodo.izquierdo, resultado)
+
+            #  Recorremos el subárbol DERECHO
+            self._preorden_recursivo(nodo.derecho, resultado)
+
+
+    # ============================================================
+    # RECORRIDO POSTORDEN (Izquierda - Derecha - Raíz)
+    # ============================================================
+    # Aquí la RAÍZ se visita AL FINAL.
+    # ============================================================
+
+    def recorrido_postorden(self):
+        """
+        RECORRIDO POSTORDEN (Post-Order Traversal)
+
+        ORDEN DE VISITA:
+            1. Subárbol IZQUIERDO
+            2. Subárbol DERECHO
+            3. NODO ACTUAL (Raíz del subárbol)
+
+        ¿PARA QUÉ SIRVE?
+        - Para eliminar un árbol desde abajo hacia arriba.
+        - Para evaluar expresiones en notación postfija.
+        - Para calcular tamaños/costos acumulados en subárboles.
+
+        EJEMPLO:
+                    50
+                   /  \
+                  30   70
+                 /  \
+                20  40
+
+        PostOrden = 20 → 40 → 30 → 70 → 50
+        (La raíz se visita AL FINAL)
+        """
+        resultado = []
+        self._postorden_recursivo(self.raiz, resultado)
+        return resultado
+
+    def _postorden_recursivo(self, nodo, resultado):
+        """
+        Función RECURSIVA para el recorrido PostOrden.
+
+        ORDEN:
+         Visitar subárbol IZQUIERDO
+         Visitar subárbol DERECHO
+         Procesar NODO ACTUAL al final
+        """
+        if nodo is not None:
+            #  Primero todo el subárbol IZQUIERDO
+            self._postorden_recursivo(nodo.izquierdo, resultado)
+
+            # Luego todo el subárbol DERECHO
+            self._postorden_recursivo(nodo.derecho, resultado)
+
+            #  Finalmente el NODO ACTUAL
+            resultado.append(nodo.valor)
 
 # Creamos un árbol nuevo (al inicio está vacío)
 mi_arbol = Arbol()
@@ -117,10 +270,12 @@ numeros = [12,10,20,7,11,17,27,2,8,14,19,25,29,4,16,22,26,30,23]
 # Insertamos cada número de la lista en el árbol
 for num in numeros:
     mi_arbol.insertar(num)
+# Números especiales
 mi_arbol._insertar_en(mi_arbol.buscar(11),9)
-mi_arbol._insertar_derecha(mi_arbol.buscar(16),"c")
+mi_arbol._insertar_derecha(mi_arbol.buscar(19),"a")
 mi_arbol._insertar_izquierda(mi_arbol.buscar(16),"b")
-mi_arbol._insertar_derecha(mi_arbol.buscar(19),"e")
+mi_arbol._insertar_derecha(mi_arbol.buscar(16),"c")
+mi_arbol._insertar_izquierda(mi_arbol.buscar(22),"d")
 
 def visualizar_arbol(arbol):
     """
@@ -183,7 +338,6 @@ def visualizar_arbol(arbol):
     # Si el árbol tiene raíz, empezamos a dibujar desde allí
     if arbol.raiz is not None:
         agregar_nodos(arbol.raiz)
-        dot.render('output/Punto3.gv', view=True) # Renders and opens the graph
         return dot
     else:
         print(" El árbol está vacío, no hay nada que dibujar.")
@@ -198,3 +352,8 @@ if grafico:
     display(grafico)
     print("\n ¡Árbol visualizado exitosamente!")
     print("   I = Izquierda | D = Derecha")
+
+if mi_arbol:
+    print(f"Recorrido en Preorden: {mi_arbol.recorrido_preorden()}")
+    print(f"Recorrido en Inorden: {mi_arbol.recorrido_inorden()}")
+    print(f"Recorrido en Postorden: {mi_arbol.recorrido_postorden()}")
