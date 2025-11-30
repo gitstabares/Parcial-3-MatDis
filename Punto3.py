@@ -1,341 +1,156 @@
+# Instalación de librerías, descomentar si no están instaladas
 #!pip install graphviz
 #!pip install ipython
-from graphviz import Digraph
-from IPython.display import display
 
+from graphviz import Digraph      # Para dibujar el árbol
+from IPython.display import display  # Para mostrarlo en notebooks
+
+# Clase Nodo: representa cada elemento del árbol
 class Nodo:
     def __init__(self, valor):
-        self.valor = valor
-        # Hijo izquierdo: aquí irán los valores MENORES que 'valor'
-        self.izquierdo = None
-        # Hijo derecho: aquí irán los valores MAYORES que 'valor'
-        self.derecho = None
+        self.valor = valor                 # Valor almacenado en el nodo
+        self.izquierdo = None              # Hijo izquierdo (valores menores)
+        self.derecho = None                # Hijo derecho (valores mayores)
 
-# DEFINICIÓN DE LA CLASE ÁRBOL BINARIO DE BÚSQUEDA
-# Esta clase administra el árbol completo:
-#   - Guarda la referencia a la raíz
-#   - Permite insertar valores nuevos
-#   - Permite buscar si un valor existe en el árbol
+# Clase Árbol Binario de Búsqueda
 class Arbol:
     def __init__(self):
-        # Al principio el árbol está vacío (no hay raíz)
-        self.raiz = None
+        self.raiz = None                   # Al inicio el árbol no tiene raíz
 
-    # -------------------------------
-    # MÉTODO: insertar(valor)
-    # Inserta un nuevo valor en el árbol, respetando las reglas del ABB:
-    #   - Si está vacío, el nuevo valor será la raíz
-    #   - Si no, se busca la posición correcta (izquierda o derecha)
-    # -------------------------------
     def insertar(self, valor):
-        # Caso 1: el árbol está vacío → el nuevo nodo será la raíz
-        if self.raiz is None:
-            self.raiz = Nodo(valor)
+        if self.raiz is None:              # Si el árbol está vacío
+            self.raiz = Nodo(valor)        # El primer valor se vuelve la raíz
             print(f" {valor} insertado como raíz del árbol")
         else:
-            # Caso 2: ya hay raíz → usamos un método auxiliar recursivo
-            self._insertar_en(self.raiz, valor)
+            self._insertar_en(self.raiz, valor)  # Llamado recursivo auxiliar
     
     def _insertar_izquierda(self, nodo_actual, valor):
-        nodo_actual.izquierdo = Nodo(valor)
+        nodo_actual.izquierdo = Nodo(valor)     # Insertar en la izquierda
         print(f" {valor} insertado a la IZQUIERDA de {nodo_actual.valor}")
 
     def _insertar_derecha(self, nodo_actual, valor):
-        nodo_actual.derecho = Nodo(valor)
+        nodo_actual.derecho = Nodo(valor)       # Insertar en la derecha
         print(f" {valor} insertado a la DERECHA de {nodo_actual.valor}")
-    # -------------------------------
-    # MÉTODO AUXILIAR: _insertar_en(nodo_actual, valor)
-    # Este método NO lo llama el usuario directamente.
-    # Se va moviendo por el árbol:
-    #   - Si valor < nodo_actual.valor → va a la izquierda
-    #   - Si valor > nodo_actual.valor → va a la derecha
-    #   - Si valor == nodo_actual.valor → no se inserta (evita duplicados)
-    # -------------------------------
+
     def _insertar_en(self, nodo_actual, valor):
-        # REGLA: Valores menores van a la IZQUIERDA
-        if valor < nodo_actual.valor:
-            # Si no hay hijo izquierdo, creamos el nodo aquí
-            if nodo_actual.izquierdo is None:
+        if valor < nodo_actual.valor:           # Si es menor → izquierda
+            if nodo_actual.izquierdo is None:   # Crear nodo si no hay hijo
                 self._insertar_izquierda(nodo_actual, valor)
             else:
-                # Si ya hay hijo izquierdo, seguimos bajando por la izquierda
-                self._insertar_en(nodo_actual.izquierdo, valor)
+                self._insertar_en(nodo_actual.izquierdo, valor)  # Recursión
 
-        # REGLA: Valores mayores van a la DERECHA
-        elif valor > nodo_actual.valor:
-            # Si no hay hijo derecho, creamos el nodo aquí
-            if nodo_actual.derecho is None:
+        elif valor > nodo_actual.valor:         # Si es mayor → derecha
+            if nodo_actual.derecho is None:     # Crear nodo si no hay hijo
                 self._insertar_derecha(nodo_actual, valor)
             else:
-                # Si ya hay hijo derecho, seguimos bajando por la derecha
-                self._insertar_en(nodo_actual.derecho, valor)
+                self._insertar_en(nodo_actual.derecho, valor)    # Recursión
 
-        # Si el valor ya existe, no lo insertamos para evitar duplicados
         else:
-            print(f" {valor} ya existe en el árbol. No se inserta de nuevo.")
+            print(f" {valor} ya existe en el árbol. No se inserta de nuevo.") # Evitar duplicados
 
-    # -------------------------------
-    # MÉTODO: buscar(valor)
-    # Devuelve True si el valor está en el árbol, False si no.
-    # -------------------------------
     def buscar(self, valor):
-        return self._buscar_en(self.raiz, valor)
+        return self._buscar_en(self.raiz, valor)    # Búsqueda pública
 
-    # -------------------------------
-    # MÉTODO AUXILIAR: _buscar_en(nodo, valor)
-    # Recorre el árbol recursivamente hasta:
-    #   - Encontrar el valor → devuelve True
-    #   - Llegar a un hijo vacío (None) → devuelve False
-    # -------------------------------
     def _buscar_en(self, nodo, valor):
-        # Caso base 1: si el nodo es None, significa que llegamos al "fondo"
-        # y no encontramos el valor
-        if nodo is None:
+        if nodo is None:                            # No encontrado
             return False
 
-        # Caso base 2: encontramos el valor en el nodo actual
-        if valor == nodo.valor:
+        if valor == nodo.valor:                     # Valor encontrado
             return nodo
 
-        # Si el valor es MENOR que el del nodo actual → buscamos a la izquierda
-        elif valor < nodo.valor:
+        elif valor < nodo.valor:                    # Buscar a la izquierda
             return self._buscar_en(nodo.izquierdo, valor)
 
-        # Si el valor es MAYOR que el del nodo actual → buscamos a la derecha
-        else:
+        else:                                       # Buscar a la derecha
             return self._buscar_en(nodo.derecho, valor)
+
     def recorrido_inorden(self):
-        """
-        RECORRIDO INORDEN (In-Order Traversal)
-
-        ORDEN DE VISITA:
-            1. Subárbol IZQUIERDO
-            2. NODO ACTUAL (raíz de ese subárbol)
-            3. Subárbol DERECHO
-
-        ¿PARA QUÉ SIRVE?
-        - En un Árbol Binario de Búsqueda (ABB), devuelve los valores
-          ORDENADOS de menor a mayor.
-        - Permite verificar si el árbol está bien estructurado.
-
-        EJEMPLO:
-                    50
-                   /  \
-                  30   70
-                 /  \
-                20  40
-
-        InOrden = 20 → 30 → 40 → 50 → 70  (ordenados)
-        """
-
-        resultado = []
+        resultado = []                              # Lista ordenada
         self._inorden_recursivo(self.raiz, resultado)
         return resultado
 
     def _inorden_recursivo(self, nodo, resultado):
-        """
-        Función RECURSIVA para el recorrido InOrden.
-
-        IDEA CLAVE:
-        - Si el nodo es None, NO hacemos nada (caso base).
-        - Si el nodo existe, visitamos en este orden:
-            1) Todo el subárbol izquierdo
-            2) El nodo actual
-            3) Todo el subárbol derecho
-        """
         if nodo is not None:
-            #  Visitar primero el subárbol IZQUIERDO
-            self._inorden_recursivo(nodo.izquierdo, resultado)
-
-            #  Luego procesamos el NODO ACTUAL
-            resultado.append(nodo.valor)
-
-            # Finalmente visitamos el subárbol DERECHO
-            self._inorden_recursivo(nodo.derecho, resultado)
-
-
-    # ============================================================
-    #  RECORRIDO PREORDEN (Raíz - Izquierda - Derecha)
-    # ============================================================
-    # Este recorrido visita primero la RAÍZ.
-    # ============================================================
+            self._inorden_recursivo(nodo.izquierdo, resultado)   # Izquierda
+            resultado.append(nodo.valor)                         # Nodo
+            self._inorden_recursivo(nodo.derecho, resultado)     # Derecha
 
     def recorrido_preorden(self):
-        """
-        RECORRIDO PREORDEN (Pre-Order Traversal)
-
-        ORDEN DE VISITA:
-            1. NODO ACTUAL (Raíz del subárbol)
-            2. Subárbol IZQUIERDO
-            3. Subárbol DERECHO
-
-        ¿PARA QUÉ SIRVE?
-        - Para clonar/copiar un árbol (guardar su estructura).
-        - Para obtener expresiones en notación prefija.
-        - Para "dibujar" el árbol a partir de la raíz.
-
-        EJEMPLO:
-                    50
-                   /  \
-                  30   70
-                 /  \
-                20  40
-
-        PreOrden = 50 → 30 → 20 → 40 → 70
-        """
-
-        resultado = []
+        resultado = []                              # Lista en preorden
         self._preorden_recursivo(self.raiz, resultado)
         return resultado
 
     def _preorden_recursivo(self, nodo, resultado):
-        """
-        Función RECURSIVA para el recorrido PreOrden.
-
-        ORDEN:
-         Procesar el NODO ACTUAL
-         Recorrer subárbol IZQUIERDO
-         Recorrer subárbol DERECHO
-        """
         if nodo is not None:
-            # Visitamos el NODO ACTUAL primero
-            resultado.append(nodo.valor)
-
-            #  Recorremos el subárbol IZQUIERDO
-            self._preorden_recursivo(nodo.izquierdo, resultado)
-
-            #  Recorremos el subárbol DERECHO
-            self._preorden_recursivo(nodo.derecho, resultado)
-
-
-    # ============================================================
-    # RECORRIDO POSTORDEN (Izquierda - Derecha - Raíz)
-    # ============================================================
-    # Aquí la RAÍZ se visita AL FINAL.
-    # ============================================================
+            resultado.append(nodo.valor)             # Nodo primero
+            self._preorden_recursivo(nodo.izquierdo, resultado) # Izquierda
+            self._preorden_recursivo(nodo.derecho, resultado)   # Derecha
 
     def recorrido_postorden(self):
-        """
-        RECORRIDO POSTORDEN (Post-Order Traversal)
-
-        ORDEN DE VISITA:
-            1. Subárbol IZQUIERDO
-            2. Subárbol DERECHO
-            3. NODO ACTUAL (Raíz del subárbol)
-
-        ¿PARA QUÉ SIRVE?
-        - Para eliminar un árbol desde abajo hacia arriba.
-        - Para evaluar expresiones en notación postfija.
-        - Para calcular tamaños/costos acumulados en subárboles.
-
-        EJEMPLO:
-                    50
-                   /  \
-                  30   70
-                 /  \
-                20  40
-
-        PostOrden = 20 → 40 → 30 → 70 → 50
-        (La raíz se visita AL FINAL)
-        """
-        resultado = []
+        resultado = []                              # Lista en postorden
         self._postorden_recursivo(self.raiz, resultado)
         return resultado
 
     def _postorden_recursivo(self, nodo, resultado):
-        """
-        Función RECURSIVA para el recorrido PostOrden.
-
-        ORDEN:
-         Visitar subárbol IZQUIERDO
-         Visitar subárbol DERECHO
-         Procesar NODO ACTUAL al final
-        """
         if nodo is not None:
-            #  Primero todo el subárbol IZQUIERDO
-            self._postorden_recursivo(nodo.izquierdo, resultado)
-
-            # Luego todo el subárbol DERECHO
-            self._postorden_recursivo(nodo.derecho, resultado)
-
-            #  Finalmente el NODO ACTUAL
-            resultado.append(nodo.valor)
+            self._postorden_recursivo(nodo.izquierdo, resultado) # Izquierda
+            self._postorden_recursivo(nodo.derecho, resultado)   # Derecha
+            resultado.append(nodo.valor)                         # Nodo al final
 
 # Creamos un árbol nuevo (al inicio está vacío)
 mi_arbol = Arbol()
 
-# Lista de números a insertar en el árbol
+# Lista de números a insertar en el árbol ingresado por nivel
 numeros = [12,10,20,7,11,17,27,2,8,14,19,25,29,4,16,22,26,30,23]
 
 # Insertamos cada número de la lista en el árbol
 for num in numeros:
-    mi_arbol.insertar(num)
-# Números especiales
-mi_arbol._insertar_en(mi_arbol.buscar(11),9)
-mi_arbol._insertar_derecha(mi_arbol.buscar(19),"a")
-mi_arbol._insertar_izquierda(mi_arbol.buscar(16),"b")
-mi_arbol._insertar_derecha(mi_arbol.buscar(16),"c")
-mi_arbol._insertar_izquierda(mi_arbol.buscar(22),"d")
+    mi_arbol.insertar(num)          # Inserta cada valor siguiendo las reglas del ABB
+
+# Números especiales (No siguen el patrón de ingreso)
+mi_arbol._insertar_en(mi_arbol.buscar(11), 9)        # Inserta 9 como hijo según la posición del nodo 11
+mi_arbol._insertar_derecha(mi_arbol.buscar(19), "a") # Inserta "a" como hijo derecho del nodo 19
+mi_arbol._insertar_izquierda(mi_arbol.buscar(16), "b") # Inserta "b" como hijo izquierdo de 16
+mi_arbol._insertar_derecha(mi_arbol.buscar(16), "c")   # Inserta "c" como hijo derecho de 16
+mi_arbol._insertar_izquierda(mi_arbol.buscar(22), "d") # Inserta "d" como hijo izquierdo de 22
 
 def visualizar_arbol(arbol):
     """
     Dibuja el árbol binario usando graphviz.
-
-    Parámetro:
-        arbol: objeto de la clase Arbol que ya tenga nodos insertados.
-
-    Retorna:
-        Un objeto 'Digraph' con el dibujo del árbol.
     """
 
-    # Creamos un nuevo grafo dirigido llamado "Árbol Binario"
+    # Grafo dirigido que representará el árbol
     dot = Digraph(comment='Árbol Binario')
 
-    # Configuramos el estilo de los nodos (opcionales, solo para estética)
+    # Estilo visual de los nodos
     dot.attr(
         'node',
-        shape='circle',       # Forma circular para cada nodo
-        style='filled',       # Que se vea relleno
-        fillcolor='lightblue',# Color de relleno
-        fontname='Arial',     # Fuente del texto
-        fontsize='14'         # Tamaño del texto
+        shape='circle',
+        style='filled',
+        fillcolor='lightblue',
+        fontname='Arial',
+        fontsize='14'
     )
 
-    # Función interna (anidada) para agregar nodos y aristas (flechas)
+    # Función interna para agregar nodos y aristas al grafo
     def agregar_nodos(nodo):
-        """
-        Agrega recursivamente los nodos y sus conexiones al objeto 'dot'.
-        """
         if nodo is not None:
-            # Usamos id(nodo) para tener un identificador único en el gráfico
-            nodo_id = str(id(nodo))
+            nodo_id = str(id(nodo))          # ID único basado en la dirección en memoria
+            dot.node(nodo_id, str(nodo.valor))  # Nodo actual
 
-            # Agregamos el nodo al grafo con su valor como etiqueta
-            dot.node(nodo_id, str(nodo.valor))
-
-            # Si existe hijo IZQUIERDO, lo agregamos y dibujamos la flecha
-            if nodo.izquierdo is not None:
+            if nodo.izquierdo is not None:      # Si hay hijo izquierdo
                 hijo_izq_id = str(id(nodo.izquierdo))
                 dot.node(hijo_izq_id, str(nodo.izquierdo.valor))
-
-                # Conectamos el nodo actual con su hijo izquierdo
-                dot.edge(nodo_id, hijo_izq_id, label='I')  # I = izquierda
-
-                # Llamada recursiva para seguir bajando
+                dot.edge(nodo_id, hijo_izq_id, label='I')  # Flecha a izquierda
                 agregar_nodos(nodo.izquierdo)
 
-            # Si existe hijo DERECHO, lo agregamos y dibujamos la flecha
-            if nodo.derecho is not None:
+            if nodo.derecho is not None:       # Si hay hijo derecho
                 hijo_der_id = str(id(nodo.derecho))
                 dot.node(hijo_der_id, str(nodo.derecho.valor))
-
-                # Conectamos el nodo actual con su hijo derecho
-                dot.edge(nodo_id, hijo_der_id, label='D')  # D = derecha
-
-                # Llamada recursiva para seguir bajando
+                dot.edge(nodo_id, hijo_der_id, label='D')  # Flecha a derecha
                 agregar_nodos(nodo.derecho)
 
-    # Si el árbol tiene raíz, empezamos a dibujar desde allí
+    # Si el árbol tiene raíz, se dibuja
     if arbol.raiz is not None:
         agregar_nodos(arbol.raiz)
         return dot
@@ -343,17 +158,13 @@ def visualizar_arbol(arbol):
         print(" El árbol está vacío, no hay nada que dibujar.")
         return None
 
-
-print("\n Generando visualización gráfica del árbol...")
+# Visualización del árbol
 grafico = visualizar_arbol(mi_arbol)
-
 if grafico:
-    # Mostramos el gráfico en la salida de Colab
-    display(grafico)
-    print("\n ¡Árbol visualizado exitosamente!")
-    print("   I = Izquierda | D = Derecha")
+    display(grafico)     # Muestra el gráfico si existe
 
+# Recorridos del árbol
 if mi_arbol:
-    print(f"Recorrido en Preorden: {mi_arbol.recorrido_preorden()}")
-    print(f"Recorrido en Inorden: {mi_arbol.recorrido_inorden()}")
-    print(f"Recorrido en Postorden: {mi_arbol.recorrido_postorden()}")
+    print(f"Recorrido en Preorden: {mi_arbol.recorrido_preorden()}")   # Nodo - Izq - Der
+    print(f"Recorrido en Inorden: {mi_arbol.recorrido_inorden()}")     # Izq - Nodo - Der
+    print(f"Recorrido en Postorden: {mi_arbol.recorrido_postorden()}") # Izq - Der - Nodo
